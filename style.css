@@ -1,0 +1,17 @@
+table > tr > td,th{
+    padding: 0;
+    background-color: red;
+    text-align: center;
+}
+table{
+    width: 100%;
+    aspect-ratio: 1/1;
+    border-spacing: 1px;
+}
+.hover > *{
+    visibility:hidden;
+}
+.hover:hover > *{
+    visibility:visible;
+    pointer-events: none;
+}
