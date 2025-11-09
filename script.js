@@ -78,7 +78,8 @@ class Grid{
         if(this.width !== grid.width || this.height !== grid.height) return false;
         for(let i=0;i<this.width;i++){
             for(let j=0;j<this.height;j++){
-                const keys = Object.keys(this.items[i][j])
+                //const keys = Object.keys(this.items[i][j]) //wont work since i added x and y values to the object
+                const keys = "RGBA"
                 for(let k of keys){
                     if(this.items[i][j][k] != grid.items[i][j][k])return false;
                 }
@@ -186,9 +187,28 @@ await grid.wright("City.png")
 let t = grid.addToWorld(b)
 grid.draw(t)
 let tiles = Tile.getAllTiles(grid); //just loop over every single element and then check for overlaps
-console.log(tiles)
+tiles.forEach((x)=>{
+    tiles.forEach((y)=>{
+        const u = x.subRegion.sub([0,0],[3,2]);
+        const d = x.subRegion.sub([0,1],[3,2]);
+        const l = x.subRegion.sub([0,0],[2,3]);
+        const r = x.subRegion.sub([1,0],[2,3]);
+        const u2 = y.subRegion.sub([0,0],[3,2]);
+        const d2 = y.subRegion.sub([0,1],[3,2]);
+        const l2 = y.subRegion.sub([0,0],[2,3]);
+        const r2 = y.subRegion.sub([1,0],[2,3]);
+        const a = x.adjacencies;
+        if(u.equals(d2)) a["UP"].push(y);
+        if(d.equals(u2)) a["DOWN"].push(y);
+        if(l.equals(r2)) a["LEFT"].push(y);
+        if(r.equals(l2)) a["RIGHT"].push(y);
+    })
+})
 let output = new Grid(grid.width,grid.height);
 output.forEach((x,y,v)=>{
+    v.R = 255;
+    v.G = 177;
+    v.B = 0;
     v["tile"] = null;
 })
 
@@ -200,7 +220,6 @@ function calculateEntropy(grid){
             let tile = n[key];
             let inverse = {"UP":"DOWN","DOWN":"UP","LEFT":"RIGHT","RIGHT":"LEFT"}[key];
             if(tile != null){
-                console.log(options,tile.adjacencies[inverse])
                 options = intersection(options,tile.adjacencies[inverse])
 
             }
@@ -208,9 +227,10 @@ function calculateEntropy(grid){
         v.options = options;
     })
 }
-/*
-for(let i=0;i<1;i++){
+
+for(let i=0;i<81;i++){
     calculateEntropy(output)
+/* 
     output.forEach((x,y,v)=>{
         let n = neighbors(x,y,output);
         let options = [...tiles];
@@ -219,15 +239,19 @@ for(let i=0;i<1;i++){
             let inverse = {"UP":"DOWN","DOWN":"UP","LEFT":"RIGHT","RIGHT":"LEFT"}[key];
             if(tile != null){
                 options = intersection(options,tile.adjacencies[inverse])
+                
 
             }
         }
         v.options = options;
     })
+*/
     let map = output.items.map(x=>x.filter(y=>!y.tile)).filter(x=>x.length)
+    console.log(map)
     let x = Math.floor(Math.random()*map.length);
     let y = Math.floor(Math.random()*map[x].length);
-    let selectedTile = map[x][y].options[Math.floor(Math.random()*output.items[x][y].options.length)];
+    let selectedTile = map[x][y].options[Math.floor(Math.random()*map[x][y].options.length)];
+    console.log(map,x,y)
     let [x2,y2] = [selectedTile.value.x,selectedTile.value.y]
     output.items[x2][y2].tile = selectedTile
     output.items[x2][y2].R = selectedTile.value.R;//wrong X Y, the correct X Y is inside of the randomely chosen tile
@@ -236,7 +260,6 @@ for(let i=0;i<1;i++){
     output.items[x2][y2].A = selectedTile.value.A;
     console.log(output)
 }
-*/
 //calculateEntropy(output)
 
 
