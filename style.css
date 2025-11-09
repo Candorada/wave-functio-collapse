@@ -4,6 +4,7 @@ table > tr > td,th{
     text-align: center;
 }
 table{
+    text-shadow: 0px 0px 5px white;
     width: 100%;
     aspect-ratio: 1/1;
     border-spacing: 1px;
